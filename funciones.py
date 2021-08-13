@@ -5,7 +5,7 @@ import string
 import random
 import os
 import configparser
-import mysql.connector
+
 
 #Variables para  el programa
 # Para probar desde el usuario root en terminal o ssh

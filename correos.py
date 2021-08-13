@@ -20,7 +20,9 @@ web_url = config['PARTICULAR']['WEB_URL']
 usar_plantillas_emails = config['GENERAL']['ACTIVAR_PLANTILLAS_EMAILS']
 nick_usuario_admin = config['PARTICULAR']['NICK_USUARIO_ADMIN']
 web_url = config['PARTICULAR']['WEB_URL']
-directorio_plantillas_emails = "/var/www/vhosts/tabulacion.vservers.es/{}/data/{}/files/Plantillas_Email".format(web_url, nick_usuario_admin)
+var_path_nextcloud = config['GENERAL']['PATH_A_NEXTCLOUD']
+var_data_nextcloud = config['GENERAL']['NOMBRE_DATA_NEXTCLOUD']
+directorio_plantillas_emails = "{}/{}/{}/files/Plantillas_Email".format(var_path_nextcloud, var_data_nextcloud, nick_usuario_admin)
 
 def enviar_email_usuario(id, nombre, correo, clave, TipoMensaje, cc = []):
     msg = email.message.Message()
