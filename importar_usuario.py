@@ -79,12 +79,9 @@ if __name__ == '__main__':
         ficheros_csv = [os.path.join(rut.directorio_clientes_csv, _) for _ in os.listdir(rut.directorio_clientes_csv) if
                     _.endswith(fileExt)]
 
-    #Llegan dos tipos de ficheros:
-    # - Clientes : Abonado;Razón social Cliente;Email empresa
-    # - Tarifas: CODIGO;CODTARIFA
-    # Detecto cual es cada uno para tener un array separado y procesar primero los clientes y luego sus tarifas
+    #Formato fichero clientes
+    # Abonado;Razón social Cliente;Email empresa
     ficheros_csv_clientes = []
-    ficheros_csv_tarifas = []
     errores = 0
     for fichero_csv in ficheros_csv:
         nombre_fichero = os.path.split(fichero_csv)[1]
@@ -94,9 +91,6 @@ if __name__ == '__main__':
         if linea[0].count("Abonado") > 0 and len(linea) >= 3:
             logger.info('El fichero csv: {} es de clientes'.format(rut.formato(nombre_fichero, 35)))
             ficheros_csv_clientes.append(fichero_csv)
-        elif linea[0].count("CODIGO") > 0 and len(linea) >= 2:
-            logger.info('El fichero csv: {} es de tarifas'.format(rut.formato(nombre_fichero, 35)))
-            ficheros_csv_tarifas.append(fichero_csv)
         else:
             logger.error("El fichero {} no se procesará. Suba ahora un fichero correcto.".format(rut.formato(nombre_fichero, 35)))
             errores = errores + 1
@@ -115,10 +109,14 @@ if __name__ == '__main__':
         for linea in f:
             # Esperamos un formato de fichero: id;nombre;email
             campos = linea.split(";")
-            if not rut.es_correo_valido(campos[2].lstrip().rstrip('\n').rstrip('\r').lower()):
-                logger.error("El email especificado \"{}\" para el usuario {} no es valido".format(campos[2].ltrip().rstrip('\n').rstrip('\r').lower(), rut.formato(campos[1], 6, 'r')))
-                logger.error("El proceso se cancelará ahora. Suba ahora un fichero correcto.")
-                break
+            # Esperamos un formato de fichero: id;nombre;email
+            campos = linea.split(";")
+            if len(campos) >= 3:
+                if not rut.es_correo_valido(campos[2].lstrip().rstrip('\n').rstrip('\r').lower()):
+                    logger.error("El email especificado \"{}\" para el usuario {} no es valido".format(
+                        campos[2].ltrip().rstrip('\n').rstrip('\r').lower(), rut.formato(campos[1], 6, 'r')))
+                    logger.error("El proceso se cancelará ahora. Suba ahora un fichero correcto.")
+                    break
             else:
                 logger.error("El fichero CSV debe tener la estructura minima id;nombre;email")
                 break
@@ -136,8 +134,9 @@ if __name__ == '__main__':
                 comando_prefix = "export OC_PASS={};".format(rut.var_password)
                 comando = "{} {} {}occ user:add --display-name=\"{}\" --password-from-env -- {}".format(
                     rut.var_apache_user, rut.var_path_to_php, rut.var_path_nextcloud, var_name, var_username)
+
                 usuario_nuevo = run_occ(comando_prefix + comando, var_username, var_name)
-                # logger.info('Usuario creado: {} '.format(var_username))
+                #logger.info('Usuario creado: {} '.format(var_username))
             else:
                 #Borro el usuario junto con sus ficheros residuales que no se borran al tener permisos 555.
                 comando = "{} {} {}occ user:delete {}".format(rut.var_apache_user, rut.var_path_to_php, rut.var_path_nextcloud, var_username)
@@ -158,48 +157,12 @@ if __name__ == '__main__':
         os.remove(fichero_csv)
         logger.info("Borro el fichero de importación csv: {}.".format(rut.formato(os.path.split(fichero_csv)[1], 35)))
 
-    ficheros_csv = ficheros_csv_tarifas
-    if len(ficheros_csv) > 0:
-        logger.info('COMIENZA ---->Importación Tarifas de Abonados')
 
-    for fichero_csv in ficheros_csv:
-        nombre_fichero = os.path.split(fichero_csv)[1]
-        logger.info('Procesando el fichero csv: {}'.format(rut.formato(nombre_fichero, 35)))
-        f = open(fichero_csv)
-        f.next() #La primera linea es el encabezado
-        for linea in f:
-            campos = linea.split(";")
-
-            var_username = campos[0].lstrip('0')
-            var_group = campos[1].rstrip('\n').rstrip('\r')
-            datos_occ = rut.run_occ_info(rut.var_apache_user, var_username)
-            if datos_occ: #Si el usuario existe
-                # Consulto los grupos
-                datos_occ_grupos = rut.run_occ_info_groups(rut.var_apache_user)
-                if not var_group in datos_occ_grupos: #Si no existe el grupo lo creo
-                    logger.info('Añadiendo la tarifa {}.'.format(var_group))
-                    comando = "{} {} {}occ group:add {}".format(
-                        rut.var_apache_user, rut.var_path_to_php, rut.var_path_nextcloud, var_group, var_username)
-                    run_occ(comando)
-                #Asigno el grupo al usuario
-                logger.info('Asignando tarifa {} al abonado {}'.format(var_group, var_username))
-                comando = "{} {} {}occ group:adduser {} {}".format(
-                    rut.var_apache_user, rut.var_path_to_php, rut.var_path_nextcloud, var_group, var_username)
-                run_occ(comando, var_username)
-                # logger.info('Comando procesado : '.format(var_password) + comando)
-            else:
-                logger.error('El usuario {} no existe. No asigno tarifa'.format(var_username))
-
-        f.close()
-        os.remove(fichero_csv)
-        logger.info("Borro el fichero de importación csv: {}.".format(rut.formato(os.path.split(fichero_csv)[1], 35)))
-
-
-    if len(ficheros_csv_clientes) > 0 or len(ficheros_csv_tarifas) or errores > 0:
         comando = "{} {} {}occ files:scan {}".format(rut.var_apache_user, rut.var_path_to_php, rut.var_path_nextcloud, rut.nick_usuario_admin)
         rut.run_cmd(comando)
-        logger.info('FIN ---->Importación Usuarios')
-        logger.info('\n')
+        if len(ficheros_csv_clientes) > 0 or errores > 0:
+            logger.info('FIN ---->Importación Usuarios')
+            logger.info('\n')
 
     logging.shutdown()
 
