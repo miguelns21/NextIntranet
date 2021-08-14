@@ -147,13 +147,12 @@ email_asunto_generico = "Aviso nuevos datos {}-Intranet".format(web_nombre)
 
 email_content_factura = """
 <h2>
-  <strong>Factura MRW</strong>
+  <strong>Factura</strong>
 </h2>
 <h3>XXXXXX</h3>
 Estimado cliente: 
 <br>
-<br>Gracias por utilizar nuestros servicios de mensajer&iacute;a de 
-<strong>MRW</strong>. 
+<br>Gracias por utilizar nuestros servicios de mensajer&iacute;a. 
 <br>
 <br>Ya puede consultar su nueva factura en la Zona Privada de la intranet de WWWWWW. 
 <br>
@@ -204,14 +203,14 @@ Estimado cliente:
 <div style="text-align: center;">&nbsp;</div>
 """
 
-email_asunto_factura = "Factura MRW"
+email_asunto_factura = "Factura"
 
 email_content_bienvenida_clave = """
 <h2>¡Hola YYYYYY!</h2>
 <h3>¡Le damos la bienvenida a&nbsp; 
   <img src="https://UUUUUU/logo.png" alt="Logo WWWWWW" width="49" height="20"> WWWWWW!
 </h3>
-<br>A partir de este momento podr&aacute; como usuario de MRW, acceder a sus facturas, notificaciones y tarifas en una 
+<br>A partir de este momento podr&aacute; como usuario, acceder a sus facturas, notificaciones y tarifas en una 
 <strong>ZONA PRIVADA</strong>. 
 <br>
 <br>Esperamos que disfrute de todas las ventajas del espacio para clientes. 
