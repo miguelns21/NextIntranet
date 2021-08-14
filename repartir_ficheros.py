@@ -15,7 +15,9 @@ if __name__ == '__main__':
 
     logger = logging.getLogger(rut.nick_usuario_admin)
     logger.setLevel(logging.DEBUG)
-    fh = logging.FileHandler('{}/{}/{}/{}/files/logs_info.txt'.format(rut.var_path_nextcloud, rut.var_data_nextcloud, rut.nick_usuario_admin))
+    fh = logging.FileHandler(
+        '{}/{}/{}/files/logs_info.txt'.format(rut.var_path_nextcloud, rut.var_data_nextcloud, rut.nick_usuario_admin))
+
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
