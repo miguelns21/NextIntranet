@@ -1,0 +1,22 @@
+; config.ini
+[SERVIDOR_CORREO_SALIENTE]
+SERVIDOR = mail.pruebas.online
+PUERTO = 587
+USUARIO = xxxxxxx@pruebas.online
+PASSWORD = xxxxxxx
+
+[PARTICULAR]
+NICK_USUARIO_ADMIN = admin
+WEB_URL = pruebas.online
+WEB_NOMBRE = Pruebas
+
+[GENERAL]
+ACTIVAR_ENVIO_EMAIL = Si
+ACTIVAR_PLANTILLAS_EMAILS = No
+USUARIO_GRUPO = www-data:group
+PATH_A_PHP = /usr/local/bin/php
+PATH_A_NEXTCLOUD = /var/home/xxxxxxx/public_html/
+NOMBRE_DATA_NEXTCLOUD = data
+
+
+
